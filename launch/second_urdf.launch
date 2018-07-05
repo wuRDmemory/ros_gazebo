@@ -11,7 +11,7 @@
     <param name="use_gui" value="$(arg use_gui)"/>
     <!-- state publisher -->
     <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-        <!-- <param name="publish_frequency" type="double" value="50.0"/> -->
+        <param name="rate" type="int" value="50"/>
     </node>
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
         <param name="publish_frequency" type="double" value="50.0"/>
@@ -24,5 +24,10 @@
     <node name="robot_gazebo_spawn" pkg="gazebo_ros" type="spawn_model" 
         args="-z 0.0 -unpause -urdf -model robot -param robot_description" 
         respawn="false" output="screen"/>
+    <!-- load ros parameter -->
+    <rosparam command="load" file="$(find ros_gazebo)/config/joint.yaml" ns="/first_urdf/joint_state_config"/>
+    <rosparam command="load" file="$(find ros_gazebo)/config/wheels.yaml" ns="/first_urdf/wheels_state_config"/>
+    <node name="controller_manager" pkg="controller_manager" type="spawner" 
+        args="/first_urdf/joint_state_config /first_urdf/wheels_state_config"/>
 
 </launch>

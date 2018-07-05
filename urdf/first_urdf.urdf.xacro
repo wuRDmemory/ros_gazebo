@@ -81,29 +81,32 @@
       <parent link="base_link"/>
       <child link="${wheel_name}"/>
       <dynamics damping="0.7"/>
+      <limit velocity="0.5" effort="1000"/>
     </joint>
 
     <gazebo reference="${wheel_name}">
-      <mu1>0.2</mu1>
-      <mu2>0.2</mu2>
+      <mu1>200.0</mu1>
+      <mu2>100.0</mu2>
+      <kp value="10000000.0" />
+      <kd value="1.0" />
       <material>Gazebo/Black</material>
     </gazebo>
 
     <transmission name="${wheel_name}_transmission">
       <type>transmission_interface/SimpleTransmission</type>
       <joint name="base_${wheel_name}">
-        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
       </joint>
       <actuator name="${wheel_name}_motor">
-        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
         <mechanicalReducction>1</mechanicalReducction>
       </actuator>
     </transmission>
   </xacro:macro>
 
-  <xacro:base_wheel_joint wheel_name="lf_wheel" front_end="+1" right_left="+1"/>
-  <xacro:base_wheel_joint wheel_name="lr_wheel" front_end="+1" right_left="-1"/>
-  <xacro:base_wheel_joint wheel_name="bf_wheel" front_end="-1" right_left="+1"/>
+  <xacro:base_wheel_joint wheel_name="fl_wheel" front_end="+1" right_left="+1"/>
+  <xacro:base_wheel_joint wheel_name="fr_wheel" front_end="+1" right_left="-1"/>
+  <xacro:base_wheel_joint wheel_name="bl_wheel" front_end="-1" right_left="+1"/>
   <xacro:base_wheel_joint wheel_name="br_wheel" front_end="-1" right_left="-1"/>
 
   <!-- world link -->
@@ -122,7 +125,7 @@
 
   <gazebo>
     <plugin name="gazeo_ros_control" filename="libgazebo_ros_control.so">
-      <robotNamespace>/</robotNamespace>
+      <robotNamespace>/first_urdf</robotNamespace>
       <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
     </plugin>
   </gazebo>
