@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+
+<launch>
+    <arg name="model" default="$(find ros_gazebo)/urdf/first_urdf.urdf.xacro"/>
+    <arg name="use_gui" default="true"/>
+    <arg name="rviz_config" default="$(find urdf_tutorial)/rviz/urdf.rviz" />
+    <!-- rviz launch -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rviz_config)"/>
+    <!-- load param -->
+    <param name="robot_description" command="$(find xacro)/xacro.py $(arg model)"/>
+    <param name="use_gui" value="$(arg use_gui)"/>
+    <!-- state publisher -->
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+        <!-- <param name="publish_frequency" type="double" value="50.0"/> -->
+    </node>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+        <param name="publish_frequency" type="double" value="50.0"/>
+    </node>
+    <!-- launch gazebo world -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="gui" value="true"/>
+    </include>
+    <!-- load model to gazebo -->
+    <node name="robot_gazebo_spawn" pkg="gazebo_ros" type="spawn_model" 
+        args="-z 0.0 -unpause -urdf -model robot -param robot_description" 
+        respawn="false" output="screen"/>
+
+</launch>
