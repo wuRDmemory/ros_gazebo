@@ -43,7 +43,7 @@
   </xacro:macro>
 
   <!-- link -->
-  <link name="base_link">
+  <link name="car_link">
     <visual>
       <xacro:box_geometry l="${base_length}" w="${base_width}" h="${base_height}"/>
       <xacro:origin_macro xyz="0 0 0" rpy="0 0 0"/> 
@@ -78,7 +78,7 @@
     <joint name="base_${wheel_name}" type="continuous">
       <origin xyz="${int(front_end)*base_length*0.3} ${int(right_left)*(base_width*0.5+wheel_length*0.5)} 0.0" rpy="0 0 0"/>
       <axis xyz="0 1 0"/>
-      <parent link="base_link"/>
+      <parent link="car_link"/>
       <child link="${wheel_name}"/>
       <dynamics damping="0.7"/>
       <limit velocity="0.5" effort="1000"/>
@@ -95,10 +95,10 @@
     <transmission name="${wheel_name}_transmission">
       <type>transmission_interface/SimpleTransmission</type>
       <joint name="base_${wheel_name}">
-        <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
       </joint>
       <actuator name="${wheel_name}_motor">
-        <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         <mechanicalReducction>1</mechanicalReducction>
       </actuator>
     </transmission>
@@ -110,23 +110,22 @@
   <xacro:base_wheel_joint wheel_name="br_wheel" front_end="-1" right_left="-1"/>
 
   <!-- world link -->
-  <link name="world"/>
+  <link name="base_link"/>
 
   <joint name="world_base" type="fixed">
-    <parent link="world"/>
-    <child link="base_link"/>
+    <parent link="base_link"/>
+    <child link="car_link"/>
     <origin xyz="0 0 ${wheel_radius}" rpy="0 0 0"/>
   </joint>
 
   <!-- material in gazebo -->
-  <gazebo reference="base_link">
+  <gazebo reference="car_link">
     <material>Gazebo/Red</material>
   </gazebo>
 
   <gazebo>
     <plugin name="gazeo_ros_control" filename="libgazebo_ros_control.so">
       <robotNamespace>/first_urdf</robotNamespace>
-      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
     </plugin>
   </gazebo>
 </robot>

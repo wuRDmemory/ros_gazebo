@@ -13,9 +13,8 @@
     <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
         <param name="rate" type="int" value="50"/>
     </node>
-    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
-        <param name="publish_frequency" type="double" value="50.0"/>
-    </node>
+    <!-- <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher">
+    </node> -->
     <!-- launch gazebo world -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
         <arg name="gui" value="true"/>
@@ -25,9 +24,13 @@
         args="-z 0.0 -unpause -urdf -model robot -param robot_description" 
         respawn="false" output="screen"/>
     <!-- load ros parameter -->
-    <rosparam command="load" file="$(find ros_gazebo)/config/joint.yaml" ns="/first_urdf/joint_state_config"/>
-    <rosparam command="load" file="$(find ros_gazebo)/config/wheels.yaml" ns="/first_urdf/wheels_state_config"/>
-    <node name="controller_manager" pkg="controller_manager" type="spawner" 
-        args="/first_urdf/joint_state_config /first_urdf/wheels_state_config"/>
-
+    <rosparam command="load" file="$(find ros_gazebo)/config/joint.yaml"/>
+    <!-- <rosparam command="load" file="$(find ros_gazebo)/config/wheels.yaml"/> -->
+    <node name="controller_manager" pkg="controller_manager" type="spawner" ns="/first_urdf"
+        args="joint_state_controller joint1_position_controller joint2_position_controller
+            joint3_position_controller joint4_position_controller"/>
+    <node name="robot_state_publisher_" pkg="robot_state_publisher" type="robot_state_publisher">
+        <param name="publish_frequency" type="double" value="50.0"/>
+        <remap from="/joint_states" to="/first_urdf/joint_states" />
+    </node>
 </launch>
