@@ -7,30 +7,31 @@
     <!-- rviz launch -->
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rviz_config)"/>
     <!-- load param -->
-    <param name="robot_description" command="$(find xacro)/xacro.py $(arg model)"/>
+    <param name="robot_description" command="$(find xacro)/xacro.py --inorder $(arg model)"/>
     <param name="use_gui" value="$(arg use_gui)"/>
     <!-- state publisher -->
     <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
         <param name="rate" type="int" value="50"/>
+        <!-- <remap from="joint_states" to="use_namespace/joint_states" /> -->
     </node>
-    <!-- <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher">
-    </node> -->
+    <node name="robot_state_publisher_" pkg="robot_state_publisher" type="robot_state_publisher">
+        <param name="publish_frequency" type="double" value="50.0"/>
+        <!-- <remap from="joint_states" to="use_namespace/joint_states" /> -->
+    </node>
     <!-- launch gazebo world -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
         <arg name="gui" value="true"/>
     </include>
     <!-- load model to gazebo -->
     <node name="robot_gazebo_spawn" pkg="gazebo_ros" type="spawn_model" 
-        args="-z 0.0 -unpause -urdf -model robot -param robot_description" 
+        args="-urdf -model rbo -param robot_description" 
         respawn="false" output="screen"/>
     <!-- load ros parameter -->
+    <!-- joint1_position_controller joint2_position_controller
+            joint3_position_controller joint4_position_controller -->
     <rosparam command="load" file="$(find ros_gazebo)/config/joint.yaml"/>
-    <!-- <rosparam command="load" file="$(find ros_gazebo)/config/wheels.yaml"/> -->
-    <node name="controller_manager" pkg="controller_manager" type="spawner" ns="/first_urdf"
-        args="joint_state_controller joint1_position_controller joint2_position_controller
-            joint3_position_controller joint4_position_controller"/>
-    <node name="robot_state_publisher_" pkg="robot_state_publisher" type="robot_state_publisher">
-        <param name="publish_frequency" type="double" value="50.0"/>
-        <remap from="/joint_states" to="/first_urdf/joint_states" />
-    </node>
+    <rosparam command="load" file="$(find ros_gazebo)/config/wheels.yaml"/>
+    <node name="controller_manager" pkg="controller_manager" type="spawner" ns="/"
+        args="joint_state_controller mobile_base_controller"/>
+
 </launch>
